@@ -1,0 +1,68 @@
+% Link lengths
+l1 = 1; % Length of link 1
+l2 = 1; % Length of link 2
+
+% Ellipsoid parameters
+a = 1; % Semi-major axis
+b = 0.5; % Semi-minor axis
+
+% Number of waypoints
+num_points = 100;
+theta1_vals = zeros(num_points, 1);
+theta2_vals = zeros(num_points, 1);
+
+% Trajectory generation
+t = linspace(0, 2*pi, num_points); % Parametric time variable
+x_trajectory = a * cos(t); % X coordinates of the trajectory
+y_trajectory = b * sin(t); % Y coordinates of the trajectory
+
+% Solve inverse kinematics
+for i = 1:num_points
+    x = x_trajectory(i);
+    y = y_trajectory(i);
+    
+    % Inverse kinematics solution (using law of cosines)
+    r = sqrt(x^2 + y^2); % Distance from origin to (x, y)
+    
+    % Check if the target is reachable
+    if r <= l1 + l2 && r >= abs(l1 - l2)
+        % Angle theta2
+        cos_theta2 = (r^2 - l1^2 - l2^2) / (-2 * l1 * l2);
+        theta2_vals(i) = acos(cos_theta2);
+        
+        % Angle theta1
+        k1 = l1 + l2 * cos(theta2_vals(i));
+        k2 = l2 * sin(theta2_vals(i));
+        theta1_vals(i) = atan2(y, x) - atan2(k2, k1);
+    else
+        % If unreachable, set theta1 and theta2 to NaN (invalid solution)
+        theta1_vals(i) = NaN;
+        theta2_vals(i) = NaN;
+    end
+end
+
+% Plot the trajectory and the robot's configuration
+figure;
+plot(x_trajectory, y_trajectory, 'r-', 'LineWidth', 2); % Trajectory path
+hold on;
+
+for i = 1:num_points
+    if ~isnan(theta1_vals(i)) && ~isnan(theta2_vals(i))
+        % Forward kinematics to plot the robot configuration
+        x1 = l1 * cos(theta1_vals(i)); % Position of joint 1
+        y1 = l1 * sin(theta1_vals(i)); % Position of joint 1
+        x2 = x1 + l2 * cos(theta1_vals(i) + theta2_vals(i)); % End effector position
+        y2 = y1 + l2 * sin(theta1_vals(i) + theta2_vals(i)); % End effector position
+        
+        % Plot robot's configuration
+        plot([0, x1], [0, y1], 'b-', 'LineWidth', 2); % Link 1
+        plot([x1, x2], [y1, y2], 'g-', 'LineWidth', 2); % Link 2
+        plot(x2, y2, 'ko', 'MarkerFaceColor', 'k'); % End effector
+    end
+end
+
+title('2-Link Robot Tracing Ellipsoid Trajectory');
+xlabel('X');
+ylabel('Y');
+axis equal;
+grid on;
