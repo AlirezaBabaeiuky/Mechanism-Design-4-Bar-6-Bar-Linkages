@@ -1,14 +1,26 @@
-function err = obj_fun(params)
-% Objective function for GA - 4-bar linkage motion generation
+function err = Sphere(x)
+% I think this named function is the place that the ga.m evaluates the
+% objective function. 
+    global NFE; % global here means defining a variable to be global among all functions in 
+    % this special folder 
+    if isempty(NFE) % output is logical value: 1 means True and 0 means False 
+        NFE=0;
+    end
 
-% Extract design parameters
-a = params(1); b = params(2); c = params(3); d = params(4);
-x_cp = params(5); y_cp = params(6); % Coupler point location relative to Link 3
+    NFE=NFE+1;
+   
+a =x(1,1);    % Design Variable number 1 - length of Crank 
+b = x(1,2);  % Design Variable number 2 length of coupler 
+c =x(1,3);  % Design Variable number 3 length of 
+d = x(1, 4);
+x_cp = x(1, 5); y_cp = x(1, 6); % Coupler point location relative to Link 3
+
+% Evaluation and Objective functions to be defiend both
 
 % Desired trajectory (example: sinusoidal)
 t = linspace(0, 2*pi, 50);
-x_des = 3*sin(t); 
-y_des = 2*cos(t);
+x_des = linspace(4, 6, length(t));       % X-coordinate of the tracer (sinusoidal) - desired trajectory / waypoints
+y_des = linspace(2, 2.5, length(t));  
 
 err = 0; % Initialize error
 
@@ -39,4 +51,5 @@ for i = 1:length(t)
     % Add position error
     err = err + (tracer(1) - x_des(i))^2 + (tracer(2) - y_des(i))^2;
 end
+
 end
