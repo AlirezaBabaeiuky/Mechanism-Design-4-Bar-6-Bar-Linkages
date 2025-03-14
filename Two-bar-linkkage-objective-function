@@ -1,0 +1,34 @@
+function err = Sphere(x)
+    global NFE; 
+    if isempty(NFE)
+        NFE = 0;
+    end
+
+    NFE = NFE + 1;
+    
+    % Design parameters
+    theta1 = x(1);  % Angle of the first joint (crank)
+    theta2 = x(2);  % Angle of the second joint (coupler)
+    
+    % Link lengths (fixed values for this example)
+    l1 = 1;  % Length of link 1
+    l2 = 1;  % Length of link 2
+    
+    % Desired trajectory (e.g., an ellipsoid trajectory)
+    t = linspace(0, 2*pi, 50); % Parametric time variable
+    a = 1; % Semi-major axis of the ellipse
+    b = 0.5; % Semi-minor axis of the ellipse
+    x_des = a * cos(t); % X-coordinate of the desired trajectory
+    y_des = b * sin(t); % Y-coordinate of the desired trajectory
+    
+    err = 0;  % Initialize error
+    
+    for i = 1:length(t)
+        % Calculate the end effector position using forward kinematics
+        x = l1 * cos(theta1) + l2 * cos(theta1 + theta2);
+        y = l1 * sin(theta1) + l2 * sin(theta1 + theta2);
+        
+        % Add position error (sum of squared errors)
+        err = err + (x - x_des(i))^2 + (y - y_des(i))^2;
+    end
+end
