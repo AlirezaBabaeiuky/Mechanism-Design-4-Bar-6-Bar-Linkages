@@ -14,6 +14,7 @@ Here’s a quick summary of synthesis approaches in mechanism design:
 • Focus: Mechanism as a function generator (e.g., θ_in → θ_out).
 • Example: Engine valve mechanism.
 ⸻
+
 Synthesis Methods:
 • Analytical (Geometric): Closed-form solutions using geometry, loop equations.
 • Graphical: Manual drawing-based design (classical method).
