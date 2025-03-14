@@ -1,3 +1,4 @@
+%% Inverse Kinematics of 4-Bar Linkage 
 % Define parameters (link lengths)
 a = 5;  % Input link length
 b = 8;  % Coupler link length
@@ -14,22 +15,28 @@ theta1 = zeros(1, length(t)); % Input angle (theta1)
 theta2 = zeros(1, length(t)); % Output angle (theta2)
 
 % Solve inverse kinematics for each position
+syms th1 th2; % Define symbolic variables
 for i = 1:length(t)
     % Tracer position (x, y)
     x = x_tracer(i);
     y = y_tracer(i);
     
     % Using the inverse kinematics equations for 4-bar linkage
-    % Solving for theta1 and theta2 using geometric method
-    % Equations derived from position of the tracer
-    % Equation setup: (a*cos(theta1) + b*cos(theta2)) = x and (a*sin(theta1) + b*sin(theta2)) = y
-    eq1 = a * cos(theta1(i)) + b * cos(theta2(i)) == x;
-    eq2 = a * sin(theta1(i)) + b * sin(theta2(i)) == y;
+    % Equation setup: (a*cos(th1) + b*cos(th2)) = x and (a*sin(th1) + b*sin(th2)) = y
+    eq1 = a * cos(th1) + b * cos(th2) == x;
+    eq2 = a * sin(th1) + b * sin(th2) == y;
     
     % Solve for theta1 and theta2
-    sol = solve([eq1, eq2], [theta1(i), theta2(i)], 'Real', true);
-    theta1(i) = double(sol.theta1);
-    theta2(i) = double(sol.theta2);
+    sol = solve([eq1, eq2], [th1, th2], 'Real', true);
+    
+    % Check if solutions exist and select the first solution
+    if ~isempty(sol.th1) && ~isempty(sol.th2)
+        theta1(i) = double(sol.th1(1));
+        theta2(i) = double(sol.th2(1));
+    else
+        theta1(i) = NaN; % Assign NaN if no solution is found
+        theta2(i) = NaN;
+    end
 end
 
 % Plot the results
