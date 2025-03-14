@@ -32,3 +32,6 @@ In general for a Mechanism project follow the following stpes in general:
 1- Synthesis (is the process of designing the Geometry of a mechanism to achieve a specific task, like generating a desired motion or path using methods like graphical, analytical, or numerical approaches, which includes path or waypints generation)  
 2- Modeling (also include the Jaboian like: Forward Kinematics and Inverse Kinematics) and derive all dynamic (kinetics and kinematics) equations using Lagrangian or Newtonians 
 3- Control: implement a controller to make the motions 
+
+Both 4-bar linkage and 6-bar linkage are 1-DOF systems. 
+In geenral, you need to define the functionality (like: desired path to trace), based on this you choose the synthesis approach (path gen., function gen. or motion gen.); then use a method to synthesize (e.g., GA); but GA also requires to evaluate the function which requires FK or IK as the function to be evaluated in GA to find the optimal L1, L2, L3, L4 and theta of tracer (coupler). Next step would be: Controller design. We have already integrated / consolidated kinetics/kinematics which deriving the equations in GA step.            
