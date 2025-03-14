@@ -1,0 +1,42 @@
+function err = obj_fun(params)
+% Objective function for GA - 4-bar linkage motion generation
+
+% Extract design parameters
+a = params(1); b = params(2); c = params(3); d = params(4);
+x_cp = params(5); y_cp = params(6); % Coupler point location relative to Link 3
+
+% Desired trajectory (example: sinusoidal)
+t = linspace(0, 2*pi, 50);
+x_des = 3*sin(t); 
+y_des = 2*cos(t);
+
+err = 0; % Initialize error
+
+for i = 1:length(t)
+    % Assume input angle theta2 = t(i)
+    theta2 = t(i);
+    
+    % Position of crank end (P2)
+    P2 = [a*cos(theta2), a*sin(theta2)];
+
+    % Solve for theta4 using loop closure (basic planar geometry)
+    % Vector loop: d + c*e^(j*theta4) = a*e^(j*theta2) + b*e^(j*theta3)
+    % Approximate theta4 from geometry
+    % Use cosine law to find theta4
+    R = sqrt((P2(1)-d)^2 + P2(2)^2);
+    cos_theta4 = (c^2 + d^2 - R^2) / (2*c*d);
+    if abs(cos_theta4) > 1
+        err = err + 1e6; continue; % infeasible geometry
+    end
+    theta4 = acos(cos_theta4);
+    
+    % Approximate coupler orientation (rough assumption)
+    theta3 = atan2(P2(2), P2(1));  % can refine if needed
+
+    % Tracer position in global frame
+    tracer = P2 + [cos(theta3), -sin(theta3); sin(theta3), cos(theta3)] * [x_cp; y_cp];
+    
+    % Add position error
+    err = err + (tracer(1) - x_des(i))^2 + (tracer(2) - y_des(i))^2;
+end
+end
