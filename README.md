@@ -18,4 +18,4 @@ Here’s a quick summary of synthesis approaches in mechanism design:
 Synthesis Methods:
 • Analytical (Geometric): Closed-form solutions using geometry, loop equations.
 • Graphical: Manual drawing-based design (classical method).
-• Numerical (Optimization-based): Use techniques like GA or PSO to meet desired performance under constraints
+• Numerical (Optimization-based): Use techniques like GA or PSO to meet desired performance under constraints.
