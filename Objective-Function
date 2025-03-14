@@ -1,48 +1,52 @@
 function err = Sphere(x)
-    global NFE;
+    global NFE; 
     if isempty(NFE)
         NFE = 0;
     end
+
     NFE = NFE + 1;
     
-    % Design Variables (GA parameters)
-    a = x(1);  % Crank length
-    b = x(2);  % Coupler length
-    c = x(3);  % Rocker length
-    d = x(4);  % Ground link length
-    theta1_init = x(5); % Initial angle for Crank (theta1)
-    theta2_init = x(6); % Initial angle for Coupler (theta2)
-    theta3_init = x(7); % Initial angle for Rocker (theta3)
-
-    % Desired trajectory
-    t = linspace(0, 2*pi, 50);   % Time steps or waypoints
-    x_des = linspace(4, 6, length(t));  % Desired X trajectory
-    y_des = linspace(2, 2.5, length(t)); % Desired Y trajectory
-
-    err = 0;  % Initialize error (RMSE or squared error)
+    % Design parameters
+    a = x(1);  % Length of crank
+    b = x(2);  % Length of coupler
+    c = x(3);  % Length of rocker
+    d = x(4);  % Fixed length (distance from ground to coupler)
+    theta1_init = x(5); % Initial angle of crank
+    theta2_init = x(6); % Initial angle of coupler
+    theta3_init = x(7); % Initial angle of rocker
+    
+    % Desired trajectory (example: sinusoidal)
+    t = linspace(0, 2*pi, 50);
+    x_des = linspace(4, 6, length(t));  % X-coordinate of the tracer
+    y_des = linspace(2, 2.5, length(t));  % Y-coordinate of the tracer
+    
+    err = 0;  % Initialize error
     
     for i = 1:length(t)
-        % Forward kinematics: Calculate position of the coupler
-        % Using initial angles and design parameters
-        theta2 = theta2_init + t(i); % Update for Crank motion
-        theta3 = theta3_init + t(i); % Update for Coupler motion
-        theta4 = theta3_init + t(i); % Update for Rocker motion
+        % Assume input angle theta2 = t(i)
+        theta2 = theta2_init + t(i);
+        
+        % Forward kinematics: calculate position of coupler (tracer)
         
         % Position of crank end (P2)
-        P2 = [a*cos(theta2), a*sin(theta2)];
+        P2 = [a*cos(theta1_init + t(i)), a*sin(theta1_init + t(i))];
         
-        % Using cosine law to calculate position of P4 (Rock end)
-        R = sqrt((P2(1) - d)^2 + P2(2)^2);
+        % Calculate position of coupler point using loop closure
+        % Solve for theta4 using geometry (loop closure)
+        R = sqrt((P2(1)-d)^2 + P2(2)^2);
         cos_theta4 = (c^2 + d^2 - R^2) / (2*c*d);
         if abs(cos_theta4) > 1
-            err = err + 1e6; continue;  % Infeasible geometry
+            err = err + 1e6; continue; % Infeasible geometry
         end
-        theta4 = acos(cos_theta4);  % Calculate theta4
-
-        % Tracer position (coupler point location)
-        tracer = P2 + [cos(theta3), -sin(theta3); sin(theta3), cos(theta3)] * [b; 0];
+        theta4 = acos(cos_theta4);
         
-        % Add squared error (RMSE) to error calculation
+        % Approximate coupler orientation
+        theta3 = atan2(P2(2), P2(1));  % Can refine if needed
+        
+        % Tracer position in global frame
+        tracer = P2 + [cos(theta3), -sin(theta3); sin(theta3), cos(theta3)] * [x(5); x(6)];
+        
+        % Add position error (RMSE)
         err = err + (tracer(1) - x_des(i))^2 + (tracer(2) - y_des(i))^2;
     end
 end
