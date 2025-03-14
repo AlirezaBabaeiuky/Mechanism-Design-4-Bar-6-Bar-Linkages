@@ -1,0 +1,49 @@
+% Define parameters (link lengths)
+a = 5;  % Input link length
+b = 8;  % Coupler link length
+c = 6;  % Output link length
+d = 10; % Fixed link length
+
+% Define waypoints for the tracer (sinusoidal trajectory in 2D)
+t = linspace(0, 2*pi, 100);  % Time vector for 1 cycle
+x_tracer = 3 * sin(t);       % X-coordinate of the tracer (sinusoidal)
+y_tracer = 2 * cos(t);       % Y-coordinate of the tracer (sinusoidal)
+
+% Initialize arrays for joint angles (theta1 and theta2)
+theta1 = zeros(1, length(t)); % Input angle (theta1)
+theta2 = zeros(1, length(t)); % Output angle (theta2)
+
+% Solve inverse kinematics for each position
+for i = 1:length(t)
+    % Tracer position (x, y)
+    x = x_tracer(i);
+    y = y_tracer(i);
+    
+    % Using the inverse kinematics equations for 4-bar linkage
+    % Solving for theta1 and theta2 using geometric method
+    % Equations derived from position of the tracer
+    % Equation setup: (a*cos(theta1) + b*cos(theta2)) = x and (a*sin(theta1) + b*sin(theta2)) = y
+    eq1 = a * cos(theta1(i)) + b * cos(theta2(i)) == x;
+    eq2 = a * sin(theta1(i)) + b * sin(theta2(i)) == y;
+    
+    % Solve for theta1 and theta2
+    sol = solve([eq1, eq2], [theta1(i), theta2(i)], 'Real', true);
+    theta1(i) = double(sol.theta1);
+    theta2(i) = double(sol.theta2);
+end
+
+% Plot the results
+figure;
+subplot(1,2,1);
+plot(t, x_tracer, t, y_tracer);
+title('Tracer Position Trajectory');
+xlabel('Time (t)');
+ylabel('Position (x, y)');
+legend('x_tracer', 'y_tracer');
+
+subplot(1,2,2);
+plot(t, theta1, t, theta2);
+title('Joint Angles (Theta1 & Theta2)');
+xlabel('Time (t)');
+ylabel('Angle (radians)');
+legend('theta1', 'theta2');
