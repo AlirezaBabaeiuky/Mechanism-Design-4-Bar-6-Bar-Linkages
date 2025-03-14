@@ -7,8 +7,8 @@ d = 10; % Fixed link length
 
 % Define waypoints for the tracer (sinusoidal trajectory in 2D)
 t = linspace(0, 2*pi, 100);  % Time vector for 1 cycle
-x_tracer = 3 * sin(t);       % X-coordinate of the tracer (sinusoidal)
-y_tracer = 2 * cos(t);       % Y-coordinate of the tracer (sinusoidal)
+x_tracer = linspace(4, 6, length(t));       % X-coordinate of the tracer (sinusoidal) - desired trajectory / waypoints
+y_tracer = linspace(2, 2.5, length(t));       % Y-coordinate of the tracer (sinusoidal)
 
 % Initialize arrays for joint angles (theta1 and theta2)
 theta1 = zeros(1, length(t)); % Input angle (theta1)
