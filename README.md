@@ -28,6 +28,7 @@ Synthesis Methods:
 • Numerical (Optimization-based): Use techniques like GA or PSO to meet desired performance under constraints.
 
 In general for a Mechanism project follow the following stpes in general:
+0- You hould have the desired path .... to trace 
 1- Synthesis (is the process of designing the Geometry of a mechanism to achieve a specific task, like generating a desired motion or path using methods like graphical, analytical, or numerical approaches, which includes path or waypints generation)  
 2- Modeling (also include the Jaboian like: Forward Kinematics and Inverse Kinematics) and derive all dynamic (kinetics and kinematics) equations using Lagrangian or Newtonians 
 3- Control: implement a controller to make the motions 
