@@ -1,0 +1,52 @@
+% Extract the optimized design parameters
+a = BestSol.Position(1); % Length of Crank
+b = BestSol.Position(2); % Length of Coupler
+c = BestSol.Position(3); % Length of Rocker
+d = BestSol.Position(4); % Fixed length
+theta1_init = BestSol.Position(5); % Initial angle of Crank
+theta2_init = BestSol.Position(6); % Initial angle of Coupler
+theta3_init = BestSol.Position(7); % Initial angle of Rocker
+
+% Define the time (or angles) for the animation
+t = linspace(0, 2*pi, 100);  % For example, one full rotation
+
+% Create a figure for the animation
+figure;
+
+% Loop through the time/angles
+for i = 1:length(t)
+    % Update the angles based on the optimized initial values and current time step
+    theta1 = theta1_init + t(i);  % Update crank angle
+    theta2 = theta2_init + t(i);  % Update coupler angle
+    theta3 = theta3_init + t(i);  % Update rocker angle
+    
+    % Forward kinematics to get the position of each joint
+    % Position of crank end (P2)
+    P2 = [a*cos(theta1), a*sin(theta1)];
+    
+    % Position of coupler point (tracer)
+    R = sqrt((P2(1)-d)^2 + P2(2)^2);
+    cos_theta4 = (c^2 + d^2 - R^2) / (2*c*d);
+    theta4 = acos(cos_theta4);
+    theta3 = atan2(P2(2), P2(1));  % Adjust if needed
+    tracer = P2 + [cos(theta3), -sin(theta3); sin(theta3), cos(theta3)] * [BestSol.Position(5); BestSol.Position(6)];
+    
+    % Plot the 4-bar linkage
+    clf;
+    hold on;
+    plot([0, P2(1)], [0, P2(2)], 'b', 'LineWidth', 2); % Crank (Link 1)
+    plot([P2(1), tracer(1)], [P2(2), tracer(2)], 'r', 'LineWidth', 2); % Coupler (Link 2)
+    plot([tracer(1), d], [tracer(2), 0], 'g', 'LineWidth', 2); % Rocker (Link 3)
+    plot([d, 0], [0, 0], 'k', 'LineWidth', 2); % Ground (Link 4)
+    
+    % Set axis limits and labels
+    axis equal;
+    xlim([-sum([a, b, c]), sum([a, b, c])]);
+    ylim([-sum([a, b, c]), sum([a, b, c])]);
+    xlabel('X');
+    ylabel('Y');
+    title('4-Bar Linkage Animation');
+    
+    % Pause for a moment to create the animation effect
+    pause(0.05);
+end
