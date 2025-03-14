@@ -6,10 +6,12 @@ Here’s a quick summary of synthesis approaches in mechanism design:
 • Objective: Move a point (e.g., coupler or tracer point) through specific positions (waypoints) in space.
 • Focus: Point’s trajectory, not orientation.
 • Example: Tracing a curve or path. (we just need the coupler or tracer in 6-bar linkages to trace/track the desired path in spatial domian). 
+
 2. Motion Generation (Body Guidance)
 • Objective: Move a rigid body through specified positions and orientations.
 • Focus: Both position and angular orientation of a body.
 • Example: Robotic arm following poses.
+
 3. Function Generation
 • Objective: Achieve a specific input-output relationship between two links.
 • Focus: Mechanism as a function generator (e.g., θ_in → θ_out).
